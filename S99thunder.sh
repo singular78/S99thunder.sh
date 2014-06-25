@@ -153,6 +153,7 @@ do_stop()
 	    fi
     elif [ $RET = 1 ] ; then
         FAIL="There are processes named '$DNAME' running which do not match your pid file which are left untouched in the name of safety, Please review the situation by hand."
+        echo "$FAIL"
         logger -p user.err -t `basename $0` "$FAIL"
         return 2
     fi
