@@ -222,9 +222,16 @@ case "$1" in
         ;;
     esac
     ;;
-  # status)
-  #   status_of_proc -p $PIDFILE $DAEMON $DNAME && exit 0 || exit $?
-  #   ;;
+  status)
+	LAN_IP=192.168.2.145
+	PORT=9001
+	STATUS=`wget -t 3 -T 3 -qO- http://${LAN_IP}:${PORT}/getsysinfo`
+	if [[ "$?" == "0" ]]; then
+		echo $STATUS
+	else
+		echo -e "\033[33m $DESC appearlly not running. \033[0m"
+	fi
+    ;;
   *)
 
     echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload|status}"
