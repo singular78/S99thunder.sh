@@ -26,7 +26,7 @@ NAME=thunder
 DAEMON=$XWAREPATH/lib/ETMDaemon
 DNAME=ETMDaemon
 PIDFILE=/var/run/$NAME/$NAME.pid
-SCRIPTNAME=/etc/init.d/$NAME
+SCRIPTNAME=/usr/syno/etc.defaults/rc.d/$NAME
 
 # Exit if the package is not installed
 [ -x "$RUN" ] || exit 5
