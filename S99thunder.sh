@@ -167,9 +167,12 @@ case "$1" in
     do_start
 
     case "$?" in
-        0|1)	
+        0)	
 			echo 'Start successfully!'
 			logger -p user.err -t `basename $0` 'Start successfully!' ;;
+        1) 
+			echo 'Old process is still running!'
+        	logger -p user.err -t `basename $0` 'Old process is still running' ;; # Old process is still running			
         *) 
 			echo "$FAIL"
 			logger -p user.err -t `basename $0` "$FAIL" ;;
@@ -206,9 +209,6 @@ case "$1" in
             0) 
 				echo 'Start successfully!'
 				logger -p user.err -t `basename $0` 'Start successfully!' ;;
-            1) 
-				echo 'Old process is still running!'
-            	logger -p user.err -t `basename $0` 'Old process is still running' ;; # Old process is still running
             *) 
 				echo "$FAIL"
             	logger -p user.err -t `basename $0` "$FAIL";; # Failed to start
