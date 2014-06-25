@@ -142,7 +142,7 @@ do_stop()
     elif [ $RET = 2 ] ; then
 	    $RUN -s > $LOG 2>/dev/null
 	    local COUNT=`cat $LOG | grep -c stopped`
-	    if [ $COUNT > 0 ] ; then
+	    if [ $COUNT -gt 0 ] ; then
 	        # remove pidfile if daemon could not delete on exit.
 	        rm -f $PIDFILE
 	        return 0
