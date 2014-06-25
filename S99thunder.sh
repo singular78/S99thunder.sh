@@ -7,11 +7,12 @@
 # Default-Stop:      0 1 6
 # Short-Description: Start/stop embed thunder manager
 #
-# Chkconfig: 2345 91 9
+# Chkconfig: 2345 99 9
 # Description: Start/stop embed thunder manager
 ### END INIT INFO
 #
-# Author: Pengxuan Men <pengxuan.men@gmail.com>
+# Author: singular78 <fhyb168@gmail.com>
+# Acknowledgements: Pengxuan Men <pengxuan.men@gmail.com>
 #
 
 USER=yb
