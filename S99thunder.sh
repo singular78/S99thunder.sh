@@ -123,7 +123,8 @@ do_stop()
     # local RET=0
 
     if [ -e $PIDFILE ] ; then
-        if ps | grep $DAEMON | grep -v grep | awk '{print $1}' |grep -q $(cat $PIDFILE) > /dev/null 2>&1 ; then
+    	ps | grep $DAEMON | grep -v grep | awk '{print $1}' |grep -q $(cat $PIDFILE)
+        if "$?" > /dev/null 2>&1 ; then
             RET=1
         else
             RET=2
@@ -131,7 +132,6 @@ do_stop()
     else
         RET=0
     fi
-
     # RET is:
     # 0 if Deamon (whichever) is not running
     # 1 if Deamon (whichever) is running
