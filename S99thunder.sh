@@ -82,7 +82,7 @@ do_start()
     if [ "$MSG" != "" ] ; then
         cat $LOG | tail -n 4 | head -n 3 | while read l; do logger -p user.err -t `basename $0` $l; done
         [ -e /var/run/$NAME ] || mkdir /var/run/$NAME
-        ps | grep $DAEMON | grep -v grep | awk '{print $2}' > $PIDFILE
+        ps | grep $DAEMON | grep -v grep | awk '{print $1}' > $PIDFILE
         return 0
     fi
 
