@@ -36,6 +36,26 @@ SCRIPTNAME=/etc/init.d/$NAME
 # Define LSB log_* functions. Depend on lsb-base (>= 3.0-6)
 # . /lib/lsb/init-functions
 
+# Get pid
+is_daemon_alive() {
+        if [ -f "$1" ]; then
+                local pid=`cat "$1"`
+
+                kill -0 $pid
+                if [ "0" = "$?" ]; then
+                        echo "$pid";
+                        return 1;
+                else
+                        echo "0";
+                        return 0;
+                fi
+        fi
+
+        echo "0";
+        return 0;
+}
+
+
 # start the daemon/service
 
 do_start()
@@ -45,12 +65,10 @@ do_start()
     #   1 if daemon was already running
     #   2 if daemon could not be started
 
-    # start_daemon -p $PIDFILE $DAEMON
-
     # Check if running
-    # if pidofproc -p $PIDFILE "$DAEMON" > /dev/null 2>&1 ; then
-    #     return 1
-    # fi
+    if [ "0" != `is_daemon_alive "$PIDFILE"` ] ; then
+        return 1
+    fi
 
     # Mount
     #umount -l /media/thunder 2>/dev/null
@@ -103,39 +121,40 @@ do_stop()
 
     # local RET=0
 
-    # if pidof $DAEMON > /dev/null 2>&1 ; then
-    #     if [ -e $PIDFILE ] && pidof $DAEMON | tr ' ' '\n' | grep -w $(cat $PIDFILE) > /dev/null 2>&1 ; then
-    #         RET=2
-    #     else
-    #         RET=1
-    #     fi
-    # else
-    #     RET=0
-    # fi
+    if [ -e $PIDFILE ] ; then
+        if ps | grep $DAEMON | grep -v grep | awk '{print $1}' |grep -q $(cat $PIDFILE) > /dev/null 2>&1 ; then
+            RET=1
+        else
+            RET=2
+        fi
+    else
+        RET=0
+    fi
 
     # RET is:
     # 0 if Deamon (whichever) is not running
     # 1 if Deamon (whichever) is running
     # 2 if Deamon from the PIDFILE is running
 
-    # if [ $RET = 0 ] ; then
-    #     return 1
-    # elif [ $RET = 2 ] ; then
-        # su $USER -c "$RUN -s" > $LOG 2>/dev/null
-    $RUN -s > $LOG 2>/dev/null
-    local COUNT=`cat $LOG | grep -c stopped`
-    if [ $COUNT > 0 ] ; then
-        # remove pidfile if daemon could not delete on exit.
-        rm -f $PIDFILE
-        return 0
-    else
-        FAIL=`cat $LOG | tail -n 1`
+    if [ $RET = 0 ] ; then
+        return 1
+    elif [ $RET = 2 ] ; then
+	    $RUN -s > $LOG 2>/dev/null
+	    local COUNT=`cat $LOG | grep -c stopped`
+	    if [ $COUNT > 0 ] ; then
+	        # remove pidfile if daemon could not delete on exit.
+	        rm -f $PIDFILE
+	        return 0
+	    else
+	        FAIL=`cat $LOG | tail -n 1`
+	        logger -p user.err -t `basename $0` "$FAIL"
+	        return 2
+	    fi
+    elif [ $RET = 1 ] ; then
+        FAIL="There are processes named '$DNAME' running which do not match your pid file which are left untouched in the name of safety, Please review the situation by hand."
+        logger -p user.err -t `basename $0` "$FAIL"
         return 2
     fi
-    # elif [ $RET = 1 ] ; then
-    #     FAIL="There are processes named '$DNAME' running which do not match your pid file which are left untouched in the name of safety, Please review the situation by hand."
-    #     return 2
-    # fi
 
     return 2
 }
@@ -148,7 +167,7 @@ case "$1" in
     do_start
 
     case "$?" in
-        0)	
+        0|1)	
 			echo 'Start successfully!'
 			logger -p user.err -t `basename $0` 'Start successfully!' ;;
         *) 
@@ -163,7 +182,7 @@ case "$1" in
     do_stop
 
     case "$?" in
-        0)	
+        0|1)	
 			echo 'Stop successfully!'
 			logger -p user.err -t `basename $0` 'Stop successfully!' 
 			;;
@@ -187,7 +206,9 @@ case "$1" in
             0) 
 				echo 'Start successfully!'
 				logger -p user.err -t `basename $0` 'Start successfully!' ;;
-            # 1) logger -p user.err -t `basename $0` 'Old process is still running' ;; # Old process is still running
+            1) 
+				echo 'Old process is still running!'
+            	logger -p user.err -t `basename $0` 'Old process is still running' ;; # Old process is still running
             *) 
 				echo "$FAIL"
             	logger -p user.err -t `basename $0` "$FAIL";; # Failed to start
