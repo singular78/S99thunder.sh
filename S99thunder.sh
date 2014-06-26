@@ -16,7 +16,7 @@
 #
 
 USER=yb
-XWAREPATH=/volume1/homes/$USER/xware
+XWAREPATH=/volume2/homes/$USER/xware
 RUN=$XWAREPATH/portal
 LOG=$XWAREPATH/message.log
 
@@ -142,7 +142,7 @@ do_stop()
     #     RET=0
     # fi
     local pid=$(ps | grep $DAEMON | grep -v grep | awk '{print $1}') # pid in the first column
-    if [ "$pid" != ""] ; then
+    if [ "$pid" != "" ] ; then
 	    if [ -e $PIDFILE ] ; then
 	        if [ "$pid" = $(cat $PIDFILE) ] ; then
 	            RET=2
