@@ -38,23 +38,23 @@ SCRIPTNAME=/usr/syno/etc.defaults/rc.d/$NAME
 # . /lib/lsb/init-functions
 
 # Get pid
-is_daemon_alive() {
-        if [ -f "$1" ]; then
-                local pid=`cat "$1"`
+# is_daemon_alive() {
+#         if [ -f "$1" ]; then
+#                 local pid=`cat "$1"`
 
-                kill -0 $pid
-                if [ "0" = "$?" ]; then
-                        echo "$pid";
-                        return 1;
-                else
-                        echo "0";
-                        return 0;
-                fi
-        fi
+#                 kill -0 $pid
+#                 if [ "0" = "$?" ]; then
+#                         echo "$pid";
+#                         return 1;
+#                 else
+#                         echo "0";
+#                         return 0;
+#                 fi
+#         fi
 
-        echo "0";
-        return 0;
-}
+#         echo "0";
+#         return 0;
+# }
 
 
 # start the daemon/service
@@ -67,8 +67,17 @@ do_start()
     #   2 if daemon could not be started
 
     # Check if running
-    if [ "0" != `is_daemon_alive "$PIDFILE"` ] ; then
-        return 1
+    # if [ [ -e $PIDFILE ] -a "0" != `is_daemon_alive "$PIDFILE"` ] ; then
+    #     return 1
+    # fi
+
+    local pid=$(ps | grep $DAEMON | grep -v grep | awk '{print $1}')
+    if [ "$pid" != ""] ; then
+	    if [ -e $PIDFILE ] ; then
+	        if [ "$pid" = $(cat $PIDFILE) ] ; then
+	            return 1
+	        fi
+    	fi
     fi
 
     # Mount
@@ -122,16 +131,31 @@ do_stop()
 
     # local RET=0
 
-    if [ -e $PIDFILE ] ; then
-    	ps | grep $DAEMON | grep -v grep | awk '{print $1}' |grep -q $(cat $PIDFILE)
-        if "$?" > /dev/null 2>&1 ; then
-            RET=1
-        else
-            RET=2
-        fi
+    # if [ -e $PIDFILE ] ; then
+    # 	ps | grep $DAEMON | grep -v grep | awk '{print $1}' |grep -q $(cat $PIDFILE)
+    #     if "$?" > /dev/null 2>&1 ; then
+    #         RET=1
+    #     else
+    #         RET=2
+    #     fi
+    # else
+    #     RET=0
+    # fi
+    local pid=$(ps | grep $DAEMON | grep -v grep | awk '{print $1}') # pid in the first column
+    if [ "$pid" != ""] ; then
+	    if [ -e $PIDFILE ] ; then
+	        if [ "$pid" = $(cat $PIDFILE) ] ; then
+	            RET=2
+	        else
+	            RET=1
+	        fi
+	    else
+	    	RET=1
+    	fi
     else
-        RET=0
+    	RET=0
     fi
+
     # RET is:
     # 0 if Deamon (whichever) is not running
     # 1 if Deamon (whichever) is running
