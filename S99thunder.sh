@@ -72,7 +72,7 @@ do_start()
     # fi
 
     local pid=$(ps | grep $DAEMON | grep -v grep | awk '{print $1}')
-    if [ "$pid" != ""] ; then
+    if [ "$pid" != "" ] ; then
 	    if [ -e $PIDFILE ] ; then
 	        if [ "$pid" = $(cat $PIDFILE) ] ; then
 	            return 1
