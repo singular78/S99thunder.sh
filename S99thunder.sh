@@ -222,7 +222,7 @@ case "$1" in
     esac
     ;;
   restart|force-reload)
-	echo "Restarting $DESC $NAME"
+    echo "Restarting $DESC $NAME"
     logger -p user.err -t `basename $0` "Restarting $DESC $NAME"
 
     do_stop
@@ -233,8 +233,8 @@ case "$1" in
 
         case "$?" in
             0) 
-				echo 'Start successfully!'
-				logger -p user.err -t `basename $0` 'Start successfully!' ;;
+				echo 'Restart successfully!'
+				logger -p user.err -t `basename $0` 'Restart successfully!' ;;
             *) 
 				echo "$FAIL"
             	logger -p user.err -t `basename $0` "$FAIL";; # Failed to start
@@ -248,14 +248,14 @@ case "$1" in
     esac
     ;;
   status)
-	LAN_IP=192.168.2.145
-	PORT=9001
-	STATUS=`wget -t 3 -T 3 -qO- http://${LAN_IP}:${PORT}/getsysinfo`
-	if [[ "$?" == "0" ]]; then
-		echo $STATUS
-	else
-		echo -e "\033[33m $DESC appearlly not running. \033[0m"
-	fi
+    LAN_IP=192.168.2.145
+    PORT=9001
+    STATUS=`wget -t 3 -T 3 -qO- http://${LAN_IP}:${PORT}/getsysinfo`
+    if [[ "$?" == "0" ]]; then
+	echo $STATUS
+    else
+	echo -e "\033[33m $DESC appearlly not running. \033[0m"
+    fi
     ;;
   *)
 
