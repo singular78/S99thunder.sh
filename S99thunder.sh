@@ -163,7 +163,8 @@ do_stop()
 
     if [ $RET = 0 ] ; then
         return 1
-    elif [ $RET = 2 ] ; then
+    elif [ $RET = 2 -o $RET = 1 ] ; then
+	    #su $USER -c "$RUN -s" > $LOG 2>/dev/null
 	    $RUN -s > $LOG 2>/dev/null
 	    local COUNT=`cat $LOG | grep -c stopped`
 	    if [ $COUNT -gt 0 ] ; then
@@ -175,11 +176,11 @@ do_stop()
 	        logger -p user.err -t `basename $0` "$FAIL"
 	        return 2
 	    fi
-    elif [ $RET = 1 ] ; then
-        FAIL="There are processes named '$DNAME' running which do not match your pid file which are left untouched in the name of safety, Please review the situation by hand."
-        echo "$FAIL"
-        logger -p user.err -t `basename $0` "$FAIL"
-        return 2
+    # elif [ $RET = 1 ] ; then
+    #    FAIL="There are processes named '$DNAME' running which do not match your pid file which are left untouched in the name of safety, Please review the situation by hand."
+    #    echo "$FAIL"
+    #    logger -p user.err -t `basename $0` "$FAIL"
+    #    return 2
     fi
 
     return 2
